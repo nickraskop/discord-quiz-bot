@@ -1,6 +1,7 @@
 import discord
 import requests
 import json
+import asyncio
 
 client = discord.Client()
 
@@ -30,4 +31,17 @@ async def on_message(message):
         question, answer = get_question()
         await message.channel.send(question)
 
-client.run('ODcxMjIwNTQ4MjEzMDIyNzMy.YQYJXQ.Vs7-DxZxEXfYG-UXg9NnkOsy3a0')
+        def check(m):
+            return m.author == message.author and m.content.isdigit()
+        
+        try:
+            guess = await client.wait_for('message', check=check, timeout=2.0)
+        except asyncio.TimeoutError:
+            return await message.channel.send('Sorry, you took too long')
+
+        if int(guess.content) == answer:
+            await message.channel.send('You are correct!')
+        else:
+            await message.channel.send('Oops. That is not right.')
+
+client.run('ODcxMjIwNTQ4MjEzMDIyNzMy.YQYJXQ.Dzru7p5n6Xqq1E-cqnNDvRncaN4')
